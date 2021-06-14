@@ -2,6 +2,7 @@ package com.thekeval.goalgame;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -25,7 +26,7 @@ public class SignUpActivity extends AppCompatActivity {
 
         btnSignUp = findViewById(R.id.btnSignUp_signUpScreen);
         etUsername = findViewById(R.id.et_userName);
-        etPassword = findViewById(R.id.et_password);
+        etPassword = findViewById(R.id.et_password_signUpScreen);
         etRepeatPassword = findViewById(R.id.et_repeat_password);
 
         dbHandler = new DatabaseHandler(this);
@@ -46,7 +47,7 @@ public class SignUpActivity extends AppCompatActivity {
                     return;
                 }
 
-                if (etPassword.getText().toString() != etRepeatPassword.getText().toString()) {
+                if (!etPassword.getText().toString().equals(etRepeatPassword.getText().toString())) {
                     Toast.makeText(SignUpActivity.this, "Password and repeat password don't match", Toast.LENGTH_SHORT).show();
                     etRepeatPassword.requestFocus();
                     return;
@@ -55,6 +56,9 @@ public class SignUpActivity extends AppCompatActivity {
                 PlayerModel player = new PlayerModel(etUsername.getText().toString(), etPassword.getText().toString(), 0);
                 dbHandler.addPlayer(player);
                 Toast.makeText(SignUpActivity.this, "Registration successful.", Toast.LENGTH_SHORT).show();
+
+                Intent scoreIntent = new Intent(SignUpActivity.this, ScoreActivity.class);
+                startActivity(scoreIntent);
 
             }
         });

@@ -73,7 +73,7 @@
         app:layout_constraintTop_toBottomOf="@+id/input_username">
 
         <EditText
-            android:id="@+id/et_password"
+            android:id="@+id/et_password_signUpScreen"
             android:layout_width="match_parent"
             android:layout_height="70dp"
             android:layout_margin="7dp"
