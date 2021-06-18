@@ -3,7 +3,9 @@ package com.thekeval.goalgame;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -56,6 +58,15 @@ public class SignUpActivity extends AppCompatActivity {
                 PlayerModel player = new PlayerModel(etUsername.getText().toString(), etPassword.getText().toString(), 0);
                 dbHandler.addPlayer(player);
                 Toast.makeText(SignUpActivity.this, "Registration successful.", Toast.LENGTH_SHORT).show();
+
+                // Create an object of SharedPreferences.
+                SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(SignUpActivity.this);
+                //now get Editor
+                SharedPreferences.Editor editor = sharedPref.edit();
+                //put your value
+                editor.putString("userName", player.name);
+                //commits your edits
+                editor.apply();
 
                 Intent scoreIntent = new Intent(SignUpActivity.this, ScoreActivity.class);
                 startActivity(scoreIntent);

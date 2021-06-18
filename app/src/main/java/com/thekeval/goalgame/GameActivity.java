@@ -131,6 +131,16 @@ public class GameActivity extends AppCompatActivity implements SensorEventListen
 
     }
 
+    @Override
+    public void onBackPressed() {
+        // super.onBackPressed();
+
+        Intent backIntent = new Intent(this, ScoreActivity.class);
+        backIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        startActivity(backIntent);
+        finish();
+    }
+
     public void calculateScore() {
         score--;
     }
@@ -204,7 +214,9 @@ public class GameActivity extends AppCompatActivity implements SensorEventListen
             Bundle extras = new Bundle();
             extras.putInt("score", score);
             scoreIntent.putExtras(extras);
+            // scoreIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
             startActivity(scoreIntent);
+            finish();
         }
 
 //        if (xPosition > stickXmax_left && (yPosition > stickYmax_top && yPosition < stickYmax_bottom)) {

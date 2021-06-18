@@ -17,6 +17,11 @@ public class ScoreActivity extends AppCompatActivity {
     TextView txtPlayer1, txtPlayer2, txtPlayer3;
     TextView txtGameWon, txtScore;
 
+//    @Override
+//    protected void onNewIntent(Intent intent) {
+//        super.onNewIntent(intent);
+//    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -35,6 +40,7 @@ public class ScoreActivity extends AppCompatActivity {
             public void onClick(View view) {
                 Intent newGameIntent = new Intent(ScoreActivity.this, GameActivity.class);
                 startActivity(newGameIntent);
+                finish();
             }
         });
 

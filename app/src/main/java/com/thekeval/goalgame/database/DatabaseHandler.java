@@ -61,6 +61,25 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         return (res != -1);
     }
 
+    public PlayerModel getPlayer(String name) {
+        String query;
+
+        query = "SELECT * FROM " + TABLE_NAME  + " WHERE name like " + name;
+
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor res = db.rawQuery(query, null);
+        // res.moveToFirst();
+
+        PlayerModel player = null;
+        if (res.moveToFirst()) {
+            player = new PlayerModel(res.getString(0), res.getString(1), res.getInt(2));
+        }
+
+        res.close();
+        return player;
+
+    }
+
     private void addJson(String jSon) {
         String insertQuery =
                 "INSERT INTO " + TABLE_NAME + " (json)" +
@@ -70,7 +89,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         db.execSQL(insertQuery);
     }
 
-    public void updateJson(String jSon) {
+    private void updateJson(String jSon) {
         String updateQuery =
                 "UPDATE " + TABLE_NAME + " SET json='" + jSon + "'";
 
@@ -78,7 +97,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         db.execSQL(updateQuery);
     }
 
-    public String getJson() {
+    private String getJson() {
         String jSon = "";
 
         String getQuery =
