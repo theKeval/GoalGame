@@ -8,6 +8,8 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 import com.thekeval.goalgame.Model.PlayerModel;
 
+import java.util.ArrayList;
+
 public class DatabaseHandler extends SQLiteOpenHelper {
 
     private static final int DATABASE_VERSION = 1;
@@ -53,18 +55,16 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         return  (res != -1);
     }
 
-    public boolean updatePlayer(PlayerModel player) {
+    public boolean updatePlayer(String playerName, int highestScore) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
-        contentValues.put(SCORE, player.highestScore);
-        long res = db.update(TABLE_NAME, contentValues, NAME+"=?", new String[] {player.name});
+        contentValues.put(SCORE, highestScore);
+        long res = db.update(TABLE_NAME, contentValues, NAME+"=?", new String[] {playerName});
         return (res != -1);
     }
 
     public PlayerModel getPlayer(String name) {
-        String query;
-
-        query = "SELECT * FROM " + TABLE_NAME  + " WHERE name like " + name;
+        String query = "SELECT * FROM " + TABLE_NAME  + " WHERE name like '" + name + "'";
 
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor res = db.rawQuery(query, null);
@@ -75,10 +75,30 @@ public class DatabaseHandler extends SQLiteOpenHelper {
             player = new PlayerModel(res.getString(0), res.getString(1), res.getInt(2));
         }
 
-        res.close();
+        // res.close();
         return player;
 
     }
+
+    public ArrayList<PlayerModel> getTop3Players() {
+        ArrayList<PlayerModel> top3Players = new ArrayList<>();
+        String query = "SELECT * FROM " + TABLE_NAME + " ORDER BY " + SCORE + " DESC LIMIT 3";
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor res = db.rawQuery(query, null);
+
+        if (res.moveToFirst()) {
+            while (!res.isAfterLast()) {
+                PlayerModel _player = new PlayerModel(res.getString(0), res.getString(1), res.getInt(2));
+                top3Players.add(_player);
+                res.moveToNext();
+            }
+        }
+
+        // res.close();
+        return  top3Players;
+
+    }
+
 
     private void addJson(String jSon) {
         String insertQuery =

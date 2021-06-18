@@ -22,6 +22,7 @@ public class MainActivity extends AppCompatActivity {
         btnSignUp = findViewById(R.id.btnSignUp);
 
         mediaPlayer = MediaPlayer.create(this, R.raw.bg_music);
+        mediaPlayer.setLooping(true);
         mediaPlayer.start();
 
         btnSignUp.setOnClickListener(new View.OnClickListener() {
@@ -40,5 +41,13 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+    }
+
+    @Override
+    public void onBackPressed() {
+        // super.onBackPressed();
+
+        mediaPlayer.stop();
+        finish();
     }
 }

@@ -71,6 +71,10 @@ public class SignUpActivity extends AppCompatActivity {
                 Intent scoreIntent = new Intent(SignUpActivity.this, ScoreActivity.class);
                 startActivity(scoreIntent);
 
+                etRepeatPassword.setText("");
+                etPassword.setText("");
+                etUsername.setText("");
+
             }
         });
 

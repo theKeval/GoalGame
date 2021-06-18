@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
@@ -16,10 +17,13 @@ import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.os.Handler;
+import android.preference.PreferenceManager;
+import android.util.Log;
 import android.view.Display;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.Toast;
 
 import com.thekeval.goalgame.Model.PlayerModel;
 import com.thekeval.goalgame.database.DatabaseHandler;
@@ -28,6 +32,8 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 public class GameActivity extends AppCompatActivity implements SensorEventListener {
+
+    private static final String TAG = "GameActivity";
 
     CustomDrawableView mCustomDrawableView = null;
     ShapeDrawable mDrawable = new ShapeDrawable();
@@ -208,15 +214,30 @@ public class GameActivity extends AppCompatActivity implements SensorEventListen
 
             isStopBall = true;
 
-            // dbHandler.updatePlayer(new PlayerModel())
 
-            Intent scoreIntent = new Intent(this, ScoreActivity.class);
-            Bundle extras = new Bundle();
-            extras.putInt("score", score);
-            scoreIntent.putExtras(extras);
-            // scoreIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
-            startActivity(scoreIntent);
-            finish();
+            // winning situation
+            SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
+            String userName = sharedPref.getString("userName", "");
+            if (!userName.isEmpty()) {
+                if (dbHandler.updatePlayer(userName, score)) {
+                    Log.d(TAG, "updateBall: highest score updated");
+
+                    Intent scoreIntent = new Intent(this, ScoreActivity.class);
+                    Bundle extras = new Bundle();
+                    extras.putInt("score", score);
+                    scoreIntent.putExtras(extras);
+                    // scoreIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+                    startActivity(scoreIntent);
+                    finish();
+                }
+                else {
+                    Toast.makeText(this, "unable to update the score in db", Toast.LENGTH_SHORT).show();
+                }
+            }
+            else {
+                Toast.makeText(this, "No logged in user found", Toast.LENGTH_SHORT).show();
+            }
+
         }
 
 //        if (xPosition > stickXmax_left && (yPosition > stickYmax_top && yPosition < stickYmax_bottom)) {

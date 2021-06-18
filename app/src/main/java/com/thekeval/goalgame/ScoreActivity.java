@@ -9,6 +9,11 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.thekeval.goalgame.Model.PlayerModel;
+import com.thekeval.goalgame.database.DatabaseHandler;
+
+import java.util.ArrayList;
+
 public class ScoreActivity extends AppCompatActivity {
 
     private static final String TAG = "ScoreActivity";
@@ -16,6 +21,8 @@ public class ScoreActivity extends AppCompatActivity {
     Button btnNewGame;
     TextView txtPlayer1, txtPlayer2, txtPlayer3;
     TextView txtGameWon, txtScore;
+
+    DatabaseHandler dbHandler;
 
 //    @Override
 //    protected void onNewIntent(Intent intent) {
@@ -34,6 +41,25 @@ public class ScoreActivity extends AppCompatActivity {
 
         txtGameWon = findViewById(R.id.txtGameWon);
         txtScore = findViewById(R.id.txtScore);
+
+        dbHandler = new DatabaseHandler(this);
+
+        ArrayList<PlayerModel> top3Players = dbHandler.getTop3Players();
+
+        if (top3Players.size() > 0) {
+            for (int i = 0; i < top3Players.size(); i++) {
+                if (i == 0) {
+                    txtPlayer1.setText(top3Players.get(i).name + ":  " + top3Players.get(i).highestScore);
+                }
+                else if (i == 1) {
+                    txtPlayer2.setText(top3Players.get(i).name + ":  " + top3Players.get(i).highestScore);
+                }
+                else if (i == 2) {
+                    txtPlayer3.setText(top3Players.get(i).name + ":  " + top3Players.get(i).highestScore);
+                }
+            }
+
+        }
 
         btnNewGame.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -59,5 +85,14 @@ public class ScoreActivity extends AppCompatActivity {
 
         }
 
+    }
+
+    @Override
+    public void onBackPressed() {
+        // super.onBackPressed();
+        Intent backIntent = new Intent(this, MainActivity.class);
+        backIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        startActivity(backIntent);
+        finish();
     }
 }
