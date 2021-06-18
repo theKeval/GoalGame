@@ -85,7 +85,7 @@
             android:layout_margin="7dp"
             android:background="@android:drawable/editbox_background"
             android:hint="Password"
-            android:inputType="textVisiblePassword"
+            android:inputType="textPassword"
             android:singleLine="true"
             android:textSize="18sp" />
 

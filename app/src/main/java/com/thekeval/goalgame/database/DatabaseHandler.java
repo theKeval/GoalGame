@@ -53,6 +53,14 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         return  (res != -1);
     }
 
+    public boolean updatePlayer(PlayerModel player) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(SCORE, player.highestScore);
+        long res = db.update(TABLE_NAME, contentValues, NAME+"=?", new String[] {player.name});
+        return (res != -1);
+    }
+
     private void addJson(String jSon) {
         String insertQuery =
                 "INSERT INTO " + TABLE_NAME + " (json)" +

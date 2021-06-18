@@ -33,7 +33,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="50dp"
-        android:text="1st player: 0"
+        android:text="1st player: 461"
         android:textColor="#3F51B5"
         android:textSize="24sp"
         android:textStyle="bold"
@@ -46,7 +46,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="32dp"
-        android:text="2nd player: 0"
+        android:text="2nd player: 432"
         android:textColor="#3F51B5"
         android:textSize="24sp"
         android:textStyle="bold"
@@ -60,11 +60,38 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="32dp"
-        android:text="3rd player: 0"
+        android:text="3rd player: 321"
         android:textColor="#3F51B5"
         android:textSize="24sp"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/txtPlayer2" />
+
+    <TextView
+        android:id="@+id/txtGameWon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="100dp"
+        android:text="Game Won"
+        android:textColor="#3F51B5"
+        android:textSize="36sp"
+        android:textStyle="bold"
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/txtPlayer3" />
+
+    <TextView
+        android:id="@+id/txtScore"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Score: 478"
+        android:textColor="#3F51B5"
+        android:textSize="30sp"
+        android:textStyle="bold"
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="@+id/txtGameWon"
+        app:layout_constraintStart_toStartOf="@+id/txtGameWon"
+        app:layout_constraintTop_toBottomOf="@+id/txtGameWon" />
 </androidx.constraintlayout.widget.ConstraintLayout>

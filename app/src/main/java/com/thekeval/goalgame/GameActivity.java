@@ -3,6 +3,7 @@ package com.thekeval.goalgame;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
@@ -14,11 +15,17 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.Display;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
-import android.widget.Toast;
+
+import com.thekeval.goalgame.Model.PlayerModel;
+import com.thekeval.goalgame.database.DatabaseHandler;
+
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class GameActivity extends AppCompatActivity implements SensorEventListener {
 
@@ -29,20 +36,38 @@ public class GameActivity extends AppCompatActivity implements SensorEventListen
     public float xmax,ymax;
 
     public float stickXpos, stickYpos;
+    public int stickWidth = 300;
+    public int stickHeight = 50;
     public float stickXmax_left, stickXmax_right, stickYmax_top, stickYmax_bottom;
+
+    public float holeXpos, holeYpos;
+    public int holeWidth = 130;
+    public int holeHeight = 130;
+    public float holeXmax_left, holeXmax_right, holeYmax_top, holeYmax_bottom;
+
+
+    // public float stickOneXpos, stickOneYpos;
 
     private Bitmap mBitmap;
     private Bitmap mWood;
     private Bitmap mWoodStick;
+    private Bitmap mHole;
 
     private SensorManager sensorManager = null;
     // public float frameTime = 0.666f;
-    public float frameTime = 0.12f;
+    public float frameTime = 0.10f;
+
+    public int score = 500;
+    private Handler handler = new Handler();
+    Timer timer = new Timer();
+
+    DatabaseHandler dbHandler;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        dbHandler = new DatabaseHandler(this);
 
         //Set FullScreen & portrait
         requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -63,19 +88,51 @@ public class GameActivity extends AppCompatActivity implements SensorEventListen
         float displayWidth = (float)display.getWidth();
         float displayHeight = (float)display.getHeight();
 
-        xmax = displayWidth - 200;
-        ymax = displayHeight - 380;
+        xmax = displayWidth - 100;
+        ymax = displayHeight - 150;
 
-        stickXpos = displayWidth / 2;
-        stickYpos = displayHeight / 2;
+//        stickWidth = 300;
+//        stickHeight = 50;
 
-        stickXmax_left = stickXpos - 150;
-        stickXmax_right = stickXpos + 150;
-        stickYmax_top = stickYpos - 350;
-        stickYmax_bottom = stickYpos + 350;
+        stickXpos = (displayWidth / 2) - (stickWidth / 2);
+        stickYpos = (displayHeight / 2) - (stickHeight / 2);
 
-        // setContentView(R.layout.activity_main2);
+//        stickXpos = 300;
+//        stickYpos = 500;
 
+        stickXmax_left = stickXpos;
+        stickXmax_right = stickXpos + stickWidth;
+        stickYmax_top = stickYpos - 50;
+        stickYmax_bottom = stickYpos + stickHeight - 50;
+
+//        stickOneXpos = 500;
+//        stickOneYpos = 700;
+
+        holeXpos = (displayWidth / 1.3f) - (holeWidth / 2);
+        holeYpos = (displayHeight / 1.3f) - (holeHeight / 2);
+
+        holeXmax_left = holeXpos;
+        holeXmax_right = holeXpos + holeWidth;
+        holeYmax_top = holeYpos - 50;
+        holeYmax_bottom = holeYpos + holeHeight - 50;
+
+
+        timer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                handler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        calculateScore();
+                    }
+                });
+            }
+        }, 0, 1000);
+
+    }
+
+    public void calculateScore() {
+        score--;
     }
 
     // This method will update the UI on new sensor events
@@ -91,8 +148,16 @@ public class GameActivity extends AppCompatActivity implements SensorEventListen
         }
     }
 
+    float previousX = 0.0f;
+    float previousY = 0.0f;
+
+    boolean isStopBall = false;
+
     private void updateBall() {
 
+        if (isStopBall) {
+            return;
+        }
 
         //Calculate new speed
         xVelocity += (xAcceleration * frameTime);
@@ -118,13 +183,28 @@ public class GameActivity extends AppCompatActivity implements SensorEventListen
             yPosition = 0;
         }
 
-        if ( (xPosition >= stickXmax_left && xPosition <= stickXmax_right) && (yPosition >= stickYmax_top && yPosition <= stickYmax_bottom) ) {
+        if ((xPosition >= stickXmax_left && xPosition <= stickXmax_right) && (yPosition >= stickYmax_top && yPosition <= stickYmax_bottom)) {
 //            xPosition = 0;
 //            yPosition = 0;
-            Toast.makeText(this, "GameOver", Toast.LENGTH_SHORT).show();
-        }
-        else {
+            // Toast.makeText(this, "GameOver", Toast.LENGTH_SHORT).show();
+            xPosition = previousX - 10;
+            yPosition = previousY - 10;
 
+        }
+
+        if ((xPosition >= holeXmax_left && xPosition <= holeXmax_right) && (yPosition >= holeYmax_top && yPosition <= holeYmax_bottom)) {
+            xPosition = previousX - 10;
+            yPosition = previousY - 10;
+
+            isStopBall = true;
+
+            // dbHandler.updatePlayer(new PlayerModel())
+
+            Intent scoreIntent = new Intent(this, ScoreActivity.class);
+            Bundle extras = new Bundle();
+            extras.putInt("score", score);
+            scoreIntent.putExtras(extras);
+            startActivity(scoreIntent);
         }
 
 //        if (xPosition > stickXmax_left && (yPosition > stickYmax_top && yPosition < stickYmax_bottom)) {
@@ -148,11 +228,11 @@ public class GameActivity extends AppCompatActivity implements SensorEventListen
 //            xPosition = stickXmax_right + 30;
 //        }
 
-
+        previousX = xPosition;
+        previousY = yPosition;
 
     }
 
-    // I've chosen to not implement this method
     public void onAccuracyChanged(Sensor arg0, int arg1)
     {
         // TODO Auto-generated method stub
@@ -180,13 +260,16 @@ public class GameActivity extends AppCompatActivity implements SensorEventListen
         {
             super(context);
             Bitmap ball = BitmapFactory.decodeResource(getResources(), R.drawable.ball);
-            final int dstWidth = 200;
-            final int dstHeight = 270;
+            final int dstWidth = 100;
+            final int dstHeight = 135;
             mBitmap = Bitmap.createScaledBitmap(ball, dstWidth, dstHeight, true);
             mWood = BitmapFactory.decodeResource(getResources(), R.drawable.wood_bg_2);
 
-            Bitmap stick = BitmapFactory.decodeResource(getResources(), R.drawable.wood_stick);
-            mWoodStick = Bitmap.createScaledBitmap(stick, 300, 700, true);
+            Bitmap stick = BitmapFactory.decodeResource(getResources(), R.drawable.wood_stick_verticle);
+            mWoodStick = Bitmap.createScaledBitmap(stick, stickWidth, stickHeight, true);
+
+            Bitmap hole = BitmapFactory.decodeResource(getResources(), R.drawable.hole);
+            mHole = Bitmap.createScaledBitmap(hole, holeWidth, holeHeight, true);
 
         }
 
@@ -196,9 +279,8 @@ public class GameActivity extends AppCompatActivity implements SensorEventListen
             canvas.drawBitmap(mWood, 0, 0, null);
             canvas.drawBitmap(bitmap, xPosition, yPosition, null);
 
-
-
             canvas.drawBitmap(mWoodStick, stickXpos, stickYpos, null);
+            canvas.drawBitmap(mHole, holeXpos, holeYpos, null);
 
             invalidate();
         }
